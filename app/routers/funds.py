@@ -1,11 +1,12 @@
 from dataclasses import asdict
-from pickle import NONE
-from fastapi import FastAPI, status, HTTPException, APIRouter
+import traceback
+from fastapi import status, HTTPException, APIRouter
 from ..schemas import Fund
 import requests
 from bs4 import BeautifulSoup 
 from babel.numbers import parse_decimal
 from pydantic.json import pydantic_encoder
+from ..utils.cache import push_to_cache, check_if_exists
 
 router = APIRouter(
     prefix="/funds"
@@ -82,7 +83,7 @@ def validate_fund_fields(fund_main_indicators, fund_main_top_list, fund_main_pri
     if last_3_months_return is None or last_3_months_return.string is None or len(last_3_months_return.string) < 2:
         last_3_months_return = None
     else: 
-        last_3_months_return = parse_decimal(fund_main_price_list[1].find("span").string.replace("%", ""))
+        last_3_months_return = parse_decimal(fund_main_price_list[1].find("span").string.replace("%", ""), locale="tr")
     
     last_6_months_return = fund_main_price_list[2].find("span")
     if last_6_months_return is None or last_6_months_return.string is None or len(last_6_months_return.string) < 2:
@@ -91,10 +92,10 @@ def validate_fund_fields(fund_main_indicators, fund_main_top_list, fund_main_pri
         last_6_months_return = parse_decimal(fund_main_price_list[2].find("span").string.replace("%", ""), locale="tr")
 
     last_1_year_return = fund_main_price_list[3].find("span")
-    if last_1_year_return is None or last_1_year_return.string is None or len(last_1_year_return.string) < 2:
-        last_1_year_return = None
-    else:
+    if last_1_year_return is not None and last_1_year_return.string is not None and len(last_1_year_return.string) > 1:
         last_1_year_return = parse_decimal(fund_main_price_list[3].find("span").string.replace("%", ""), locale="tr")
+    else:
+        last_1_year_return = None
 
     fund_fields = {
         "code": code,
@@ -131,13 +132,25 @@ def get_fund(code: str):
     url_params = {"FonKod": code}
 
     try:
-        fund_page = load_fund_page(url_params)
-        parse_fund_profile(fund_page.get("fund_profile_table"))
-        fund_fields = validate_fund_fields(fund_page.get("fund_main_indicators"), fund_page.get("fund_main_top_list"), fund_page.get("fund_main_price_list"))
-        fund = initialize_fund(fund_fields)
-        return fund.__dict__
+        cached_data = check_if_exists(code)
+
+        if (cached_data):
+            print("fetching from cache...")
+            return cached_data
+        else:
+            print("getting fresh data...")
+            fund_page = load_fund_page(url_params)
+            parse_fund_profile(fund_page.get("fund_profile_table"))
+            fund_fields = validate_fund_fields(fund_page.get("fund_main_indicators"), fund_page.get("fund_main_top_list"), fund_page.get("fund_main_price_list"))
+            fund = initialize_fund(fund_fields)
+            fund_dict = fund.__dict__
+            fund_dict.pop("__pydantic_initialised__")
+            print(fund_dict)
+            push_to_cache(code, fund_dict)
+            return fund_dict
         
     except Exception as error:
         print(error)
+        traceback.print_exc()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occured!")
 
