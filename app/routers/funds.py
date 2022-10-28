@@ -59,41 +59,41 @@ def validate_fund_fields(fund_main_indicators, fund_main_top_list, fund_main_pri
     if last_price is None or last_price.string is None or len(last_price.string) < 1:
         last_price = None
     else:
-        last_price = parse_decimal(fund_main_top_list[0].find("span").string, locale="tr")
+        last_price = float(parse_decimal(fund_main_top_list[0].find("span").string, locale="tr"))
     
     daily_return = fund_main_top_list[1].find("span")
     if daily_return is None or daily_return.string is None or len(daily_return.string) < 2:
         daily_return = None
     else:
-        daily_return = parse_decimal(fund_main_top_list[1].find("span").string.replace("%", ""), locale="TR")
+        daily_return = float(parse_decimal(fund_main_top_list[1].find("span").string.replace("%", ""), locale="TR"))
 
     total_value_try = fund_main_top_list[3].find("span")
     if total_value_try is None or total_value_try.string is None or len(total_value_try.string) < 1:
         total_value_try = None
     else:
-        total_value_try = parse_decimal(fund_main_top_list[3].find("span").string, locale="tr")
+        total_value_try = float(parse_decimal(fund_main_top_list[3].find("span").string, locale="tr"))
 
     last_1_month_return = fund_main_price_list[0].find("span")
     if last_1_month_return is None or last_1_month_return.string is None or len(last_1_month_return.string) < 2:
         last_1_month_return = None
     else:
-        last_1_month_return = parse_decimal(fund_main_price_list[0].find("span").string.replace("%", ""), locale="tr")
+        last_1_month_return = float(parse_decimal(fund_main_price_list[0].find("span").string.replace("%", ""), locale="tr"))
 
     last_3_months_return = fund_main_price_list[1].find("span")
     if last_3_months_return is None or last_3_months_return.string is None or len(last_3_months_return.string) < 2:
         last_3_months_return = None
     else: 
-        last_3_months_return = parse_decimal(fund_main_price_list[1].find("span").string.replace("%", ""), locale="tr")
+        last_3_months_return = float(parse_decimal(fund_main_price_list[1].find("span").string.replace("%", ""), locale="tr"))
     
     last_6_months_return = fund_main_price_list[2].find("span")
     if last_6_months_return is None or last_6_months_return.string is None or len(last_6_months_return.string) < 2:
         last_6_months_return = None
     else:
-        last_6_months_return = parse_decimal(fund_main_price_list[2].find("span").string.replace("%", ""), locale="tr")
+        last_6_months_return = float(parse_decimal(fund_main_price_list[2].find("span").string.replace("%", ""), locale="tr"))
 
     last_1_year_return = fund_main_price_list[3].find("span")
     if last_1_year_return is not None and last_1_year_return.string is not None and len(last_1_year_return.string) > 1:
-        last_1_year_return = parse_decimal(fund_main_price_list[3].find("span").string.replace("%", ""), locale="tr")
+        last_1_year_return = float(parse_decimal(fund_main_price_list[3].find("span").string.replace("%", ""), locale="tr"))
     else:
         last_1_year_return = None
 
