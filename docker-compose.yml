@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  api:
+    image: engincan/tefasapi:latest
+    depends_on:
+      - cache
+    ports:
+      - 8000:8000
+    environment:
+      - REDIS_HOSTNAME=cache
+      - REDIS_PORT=6379
+      - REFRESH_HOUR=23
+
+  cache:
+    image: redis
+
+        
