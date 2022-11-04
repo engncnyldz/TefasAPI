@@ -143,14 +143,16 @@ def get_fund(code: str):
             parse_fund_profile(fund_page.get("fund_profile_table"))
             fund_fields = validate_fund_fields(fund_page.get("fund_main_indicators"), fund_page.get("fund_main_top_list"), fund_page.get("fund_main_price_list"))
             fund = initialize_fund(fund_fields)
+
+            if fund.code.strip() == "":
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Requested fund code not found!")
+
             fund_dict = fund.__dict__
             fund_dict.pop("__pydantic_initialised__")
-            print(fund_dict)
+
             push_to_cache(code, fund_dict)
             return fund_dict
         
     except Exception as error:
-        print(error)
-        traceback.print_exc()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occured!")
 

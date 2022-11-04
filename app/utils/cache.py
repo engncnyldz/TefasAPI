@@ -1,8 +1,6 @@
 from .redis_host import r
 from .refresh_time import get_expire_time
 
-r.set("code", "yzc")
-
 def check_if_exists(name):
     data = r.hgetall(name)  
     for key, value in data.items():
