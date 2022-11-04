@@ -6,6 +6,6 @@ It queries fund search page (https://www.tefas.gov.tr/FonAnaliz.aspx?), extracts
 It caches fund data using Redis, since fund prices do not get updated momentarily. <br />
 The application requires following environment variables:
 
-`REDIS_HOST`: Redis client hostname.  <br />
+`REDIS_HOSTNAME`: Redis client hostname.  <br />
 `REDIS_PORT`: Redis client port.  <br />
 `REFRESH_HOUR`: An integer that indicates at which hour during the day the data will be refreshed (0-23)
