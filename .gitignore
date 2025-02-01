@@ -1,5 +1,6 @@
-<<<<<<< HEAD
-=======
+deployment-local.yaml
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -104,16 +105,13 @@ celerybeat.pid
 *.sage.py
 
 # Environments
->>>>>>> 4629093607cec9b07a766dd057acfd080947463e
 .env
 .venv
 env/
 venv/
 ENV/
 env.bak/
-<<<<<<< HEAD
 venv.bak/
-=======
 venv.bak/
 
 # Spyder project settings
@@ -133,4 +131,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
->>>>>>> 4629093607cec9b07a766dd057acfd080947463e
